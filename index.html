@@ -48,62 +48,32 @@
       font-size: 24px;
       margin-bottom: 20px;
     }
-    
-    button {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-              font-weight: 750;
 
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-button:active {
-  background-color: #3e8e41;
-}
-
-      body {
-      font-family: Helvetica;
-      background-color: #1a1a1a;
-      color: #fff;
-        font-weight: bolder;
-    }
-    
-        #results-container {
-      text-align: left;
+    #problem-results {
+      height: 200px;
       margin-top: 20px;
-      max-height: 200px;
-      overflow-y: scroll;
+      overflow-y: auto;
       border: 1px solid #ccc;
       padding: 10px;
-    }
-
-    .question-answer {
-      margin-bottom: 10px;
-    }
-
-    .unanswered {
-      color: #999;
+      text-align: left;
     }
 
     .correct {
-      color: #0a0;
+      color: green;
     }
 
     .incorrect {
-      color: #f00;
+      color: red;
+    }
+
+    .unanswered {
+      color: lightgray;
     }
   </style>
 </head>
 <body>
   <div id="header">
-    <img id="logo" src="/dqwdqwdqwdqwd.jpg" alt="Logo">
+    <img id="logo" src="logo.png" alt="Logo">
   </div>
 
   <div id="test-container">
@@ -134,51 +104,27 @@ button:active {
       </form>
     </div>
 
- <div id="score-screen">
-    <h2>Test Results</h2>
-    <div id="final-score"></div>
-    <div id="results-container"></div>
-    <button onclick="restartTest()">Restart Test</button>
+    <div id="score-screen">
+      <h2>Test Results</h2>
+      <div id="final-score"></div>
+      <div id="problem-results"></div>
+<button onclick="refreshPage()">Restart Test</button>
+
+  <script>
+    function refreshPage() {
+      location.reload();
+    }
+  </script>    </div>
   </div>
 
   <script>
-    function finishTest() {
-  // ... Your existing code ...
-
-  var resultsContainer = document.getElementById("results-container");
-  resultsContainer.innerHTML = "";
-
-  for (var i = 0; i < inputs.length; i++) {
-    var userAnswer = parseInt(inputs[i].value);
-    var num1 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[0]);
-    var num2 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[1].split(" = ")[0]);
-    var correctAnswer = num1 * num2;
-    var resultText = num1 + " x " + num2 + " = ";
-
-    var resultItem = document.createElement("div");
-    resultItem.classList.add("question-answer");
-
-    if (isNaN(userAnswer)) {
-      resultItem.classList.add("unanswered");
-      resultText += "Unanswered";
-    } else if (userAnswer === correctAnswer) {
-      resultItem.classList.add("correct");
-      resultText += userAnswer + " (Correct)";
-    } else {
-      resultItem.classList.add("incorrect");
-      resultText += userAnswer + " (Incorrect)";
-    }
-
-    resultItem.textContent = resultText;
-    resultsContainer.appendChild(resultItem);
-  }
-    
     var lengthInput = document.getElementById("length");
     var problemsInput = document.getElementById("problems");
     var minMultipleInput = document.getElementById("min-multiple");
     var maxMultipleInput = document.getElementById("max-multiple");
     var questionContainer = document.getElementById("question-container");
     var finalScoreDiv = document.getElementById("final-score");
+    var problemResultsDiv = document.getElementById("problem-results");
     var currentProblem = 0;
     var score = 0;
     var wrongAnswers = 0;
@@ -256,60 +202,41 @@ button:active {
       timer = timerInterval;
     }
 
-    function finishTest() {
-      clearInterval(timer);
+function finishTest() {
+  clearInterval(timer);
 
-      var form = document.getElementById("test-form");
-      var inputs = form.getElementsByTagName("input");
+  var form = document.getElementById("test-form");
+  var inputs = form.getElementsByTagName("input");
 
-      for (var i = 0; i < inputs.length; i++) {
-        var userAnswer = parseInt(inputs[i].value);
-        var num1 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[0]);
-        var num2 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[1].split(" = ")[0]);
-        var correctAnswer = num1 * num2;
+  for (var i = 0; i < inputs.length; i++) {
+    var userAnswer = parseInt(inputs[i].value);
+    var num1 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[0]);
+    var num2 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[1].split(" = ")[0]);
+    var correctAnswer = num1 * num2;
 
-        if (isNaN(userAnswer)) {
-          unanswered++;
-        } else if (userAnswer === correctAnswer) {
-          score++;
-        } else {
-          wrongAnswers++;
-        }
-      }
-
-      // Hide test screen and show score screen
-      document.getElementById("test-screen").style.display = "none";
-      document.getElementById("score-screen").style.display = "block";
-
-      var scoreText = "Score: " + score + " / " + numProblems + "<br>";
-      scoreText += "Correct: " + score + "<br>";
-      scoreText += "Wrong: " + wrongAnswers + "<br>";
-      scoreText += "Unanswered: " + unanswered;
-
-      finalScoreDiv.innerHTML = scoreText;
+    if (isNaN(userAnswer)) {
+      unanswered++;
+      problemResultsDiv.innerHTML += "<span class='unanswered'>" + form.children[i].getElementsByTagName("label")[0].textContent + "</span><br>";
+    } else if (userAnswer === correctAnswer) {
+      score++;
+      problemResultsDiv.innerHTML += "<span class='correct'>" + form.children[i].getElementsByTagName("label")[0].textContent + "</span><br>";
+    } else {
+      wrongAnswers++;
+      problemResultsDiv.innerHTML += "<span class='incorrect'>" + form.children[i].getElementsByTagName("label")[0].textContent + "</span><br>";
     }
+  }
 
-    function restartTest() {
-      // Reset variables
-      currentProblem = 0;
-      score = 0;
-      wrongAnswers = 0;
-      unanswered = 0;
+  // Hide test screen and show score screen
+  document.getElementById("test-screen").style.display = "none";
+  document.getElementById("score-screen").style.display = "block";
 
-      // Reset screens
-      document.getElementById("score-screen").style.display = "none";
-      document.getElementById("start-screen").style.display = "block";
-    }
+  var scoreText = "Score: " + score + " / " + numProblems + "<br>";
+  scoreText += "Correct: " + score + "<br>";
+  scoreText += "Wrong: " + wrongAnswers + "<br>";
+  scoreText += "Unanswered: " + unanswered;
 
-    // Trigger finishTest() when the Enter key is pressed
-    document.addEventListener("keydown", function (event) {
-      if (event.keyCode === 13 && document.getElementById("test-screen").style.display === "block") {
-        finishTest();
-      }
-    });
-
-    // Trigger finishTest() when the Finish Early button is clicked
-    document.getElementById("finish-early").addEventListener("click", finishTest);
-  </script>
+  finalScoreDiv.innerHTML = scoreText;
+}
+ </script>
 </body>
 </html>
