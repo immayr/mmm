@@ -74,6 +74,31 @@ button:active {
       color: #fff;
         font-weight: bolder;
     }
+    
+        #results-container {
+      text-align: left;
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    .question-answer {
+      margin-bottom: 10px;
+    }
+
+    .unanswered {
+      color: #999;
+    }
+
+    .correct {
+      color: #0a0;
+    }
+
+    .incorrect {
+      color: #f00;
+    }
   </style>
 </head>
 <body>
@@ -109,14 +134,45 @@ button:active {
       </form>
     </div>
 
-    <div id="score-screen">
-      <h2>Test Results</h2>
-      <div id="final-score"></div>
-      <button onclick="restartTest()">Restart Test</button>
-    </div>
+ <div id="score-screen">
+    <h2>Test Results</h2>
+    <div id="final-score"></div>
+    <div id="results-container"></div>
+    <button onclick="restartTest()">Restart Test</button>
   </div>
 
   <script>
+    function finishTest() {
+  // ... Your existing code ...
+
+  var resultsContainer = document.getElementById("results-container");
+  resultsContainer.innerHTML = "";
+
+  for (var i = 0; i < inputs.length; i++) {
+    var userAnswer = parseInt(inputs[i].value);
+    var num1 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[0]);
+    var num2 = parseInt(form.children[i].getElementsByTagName("label")[0].textContent.split(" x ")[1].split(" = ")[0]);
+    var correctAnswer = num1 * num2;
+    var resultText = num1 + " x " + num2 + " = ";
+
+    var resultItem = document.createElement("div");
+    resultItem.classList.add("question-answer");
+
+    if (isNaN(userAnswer)) {
+      resultItem.classList.add("unanswered");
+      resultText += "Unanswered";
+    } else if (userAnswer === correctAnswer) {
+      resultItem.classList.add("correct");
+      resultText += userAnswer + " (Correct)";
+    } else {
+      resultItem.classList.add("incorrect");
+      resultText += userAnswer + " (Incorrect)";
+    }
+
+    resultItem.textContent = resultText;
+    resultsContainer.appendChild(resultItem);
+  }
+    
     var lengthInput = document.getElementById("length");
     var problemsInput = document.getElementById("problems");
     var minMultipleInput = document.getElementById("min-multiple");
